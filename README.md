@@ -1,9 +1,3 @@
-Coursera_PML_Project
-====================
-
-Project for Practical Machine Learning Class
-
-
 library(caret)
 
 #Read in training and testing data:
@@ -30,33 +24,37 @@ inTrain = createDataPartition(train_clean$classe, p = 0.7)[[1]]
 train_clean_train = train_clean[inTrain,]
 train_clean_test = train_clean_train[-inTrain,]
 
-#train model using training data with regression tree analysis and returns the object unchanged using na.pass
+#train model using training data with classification tree and generalized boosted model and returns the object unchanged using na.pass
 #impute data using k nearest neighbors
-modelfit=train(classe~., data=train_clean_train, method="rpart", preProcess = c("knnImpute"), na.action  = na.pass)
+model1=train(classe~., data=train_clean_train, method="rpart", preProcess = c("knnImpute"), na.action  = na.pass)
+model2=train(classe~., data=train_clean_train, method="gbm", preProcess = c("knnImpute"), na.action  = na.pass)
 
 #make prediction using cross validation data:
-pred=predict(modelfit, train_clean_test)
-#train_clean_test$predcorrect=pred==train_clean_test$classe
+pred1=predict(model1, train_clean_test)
+pred2=predict(model2, train_clean_test)
+
+#fit a model that combines predictors
+pred_com=data.frame(pred1,pred2,classe=train_clean_test$classe)
+model_com=train(classe~., data=pred_com, method="gbm")
+pred_com=predict(model_com,pred_com)
 
 #plot the tree:
 library(rattle)
-jpeg('figure1.jpg')
-fancyRpartPlot(modelfit$finalModel)
+jpeg('figure_rpart.jpg')
+fancyRpartPlot(model1$finalModel)
 dev.off()
 
 #check out of sample error:
 missClass = function(values,prediction){
 sum((prediction != values))/length(values)}
-missClass(t(train_clean_test$classe),pred)
-#out of sample error= 0.5009732
+missClass(t(train_clean_test$classe),pred_com)
+#out of sample error= 0.0285922
 
 #make preduction using testing data:
-pred_test=predict(modelfit, test_clean)
-
-#plot the tree:
-jpeg('figure2.jpg')
-fancyRpartPlot(modelfit$finalModel)
-dev.off()
+pred1_test=predict(model1,test_clean)
+pred2_test=predict(model2,test_clean)
+pred_final_test=data.frame(pred1=pred1_test,pred2=pred2_test)
+pred_com_test=predict(model_com, pred_final_test)
 
 #output results for test cases for submission:
 pml_write_files = function(x){
@@ -66,4 +64,4 @@ pml_write_files = function(x){
     write.table(x[i],file=filename,quote=FALSE,row.names=FALSE,col.names=FALSE)
   }
 }
-pml_write_files(pred_test)
+pml_write_files(pred_com_test)
