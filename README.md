@@ -50,7 +50,7 @@ sum((prediction != values))/length(values)}
 missClass(t(train_clean_test$classe),pred_com)
 #out of sample error= 0.0285922
 
-#make preduction using testing data:
+#make prediction using testing data:
 pred1_test=predict(model1,test_clean)
 pred2_test=predict(model2,test_clean)
 pred_final_test=data.frame(pred1=pred1_test,pred2=pred2_test)
