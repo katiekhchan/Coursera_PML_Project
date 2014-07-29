@@ -1,0 +1,9 @@
+Welcome to the Coursera_PML_Project wiki!
+
+In this project, I first cleaned the dataset by: 1) removing variables that I think may not contribute much to the "classe" response, which are personal identifier, timestamp and window related variables; 2) removing variables related to average, minimum, maximum, standard deviation, kurtosis, and skewness of a main group of variables that may contribute to predict the "classe" response; 3) removing variables that have many missing values and do not know how to interpret, i.e. those that are prefixed with "amplitude".
+
+Then, I created training and testing set using the training set of data using a proportion of 0.7. The testing set created is used for cross validation. Then, I trimmed the variables for both the training, cross validation, and testing set.
+
+Afterwards, I adopted an ensemble approach to build the model. I first trained model using training data with classification tree, and then built another model using generalized boosted model. Both of the methods can be used for classification. I then made prediction using the two models with cross validation data. Then, I fit a model that combined the predictors from the two models using the generalized boosting method. Below shows the tree of the first model: 
+
+Moreover, I checked the out of sample error by counting the number of unmated cases using the cross validation and divided by the total sample size of the validation data. The error is 0.0285922.
